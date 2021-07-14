@@ -4,6 +4,7 @@ import {
   isScalarType,
   isInputObjectType,
   isSystemType,
+  isScalarNonEnumType,
 } from '../introspection/';
 
 export function isNode(type) {
@@ -15,11 +16,25 @@ export function isNode(type) {
   );
 }
 
+export function isNodeWithEnums(type) {
+  return !(
+    isScalarNonEnumType(type) ||
+    isInputObjectType(type) ||
+    isSystemType(type) ||
+    type.isRelayType
+  );
+}
+
 export function getDefaultRoot(schema) {
   return schema.queryType.name;
 }
 
-export function getTypeGraph(schema, rootType: string, hideRoot: boolean) {
+export function getTypeGraph(
+  schema,
+  rootType: string,
+  hideRoot: boolean,
+  verboseOutput: boolean,
+) {
   if (schema === null) return null;
 
   const rootId = typeNameToId(rootType || getDefaultRoot(schema));
@@ -32,7 +47,7 @@ export function getTypeGraph(schema, rootType: string, hideRoot: boolean) {
       ...(type.possibleTypes || []),
     ])
       .map('type')
-      .filter(isNode)
+      .filter(verboseOutput ? isNodeWithEnums : isNode)
       .map('id')
       .value();
   }

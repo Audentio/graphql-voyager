@@ -25,6 +25,7 @@ export interface VoyagerDisplayOptions {
   skipDeprecated?: boolean;
   showLeafFields?: boolean;
   sortByAlphabet?: boolean;
+  verboseOutput?: boolean;
   hideRoot?: boolean;
 }
 
@@ -33,6 +34,7 @@ const defaultDisplayOptions = {
   skipRelay: true,
   skipDeprecated: true,
   sortByAlphabet: false,
+  verboseOutput: false,
   showLeafFields: true,
   hideRoot: false,
 };
@@ -65,6 +67,7 @@ export default class Voyager extends React.Component<VoyagerProps> {
       skipRelay: PropTypes.bool,
       skipDeprecated: PropTypes.bool,
       sortByAlphabet: PropTypes.bool,
+      verboseOutput: PropTypes.bool,
       hideRoot: PropTypes.bool,
       showLeafFields: PropTypes.bool,
     }),
@@ -144,6 +147,7 @@ export default class Voyager extends React.Component<VoyagerProps> {
       schema,
       displayOptions.rootType,
       displayOptions.hideRoot,
+      displayOptions.verboseOutput,
     );
 
     this.setState({

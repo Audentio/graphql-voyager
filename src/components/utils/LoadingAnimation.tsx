@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as classNames from 'classnames';
+var classNames = require('classnames');
 
 import './LoadingAnimation.css';
 

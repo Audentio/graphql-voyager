@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as classNames from 'classnames';
+var classNames = require('classnames');
 
 import './TypeDoc.css';
 

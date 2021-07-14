@@ -26,7 +26,7 @@ export function getDot(typeGraph, displayOptions): string {
         (node) => `
         "${node.name}" [
           id = "${node.id}"
-          label = ${nodeLabel(node)}
+          label = ${nodeLabel(node, displayOptions.verboseOutput)}
         ]
         ${objectValues(node.fields, (field) =>
           isNode(field.type)
@@ -62,7 +62,11 @@ export function getDot(typeGraph, displayOptions): string {
   `
   );
 
-  function nodeLabel(node) {
+  function nodeLabel(node, showDescription = false) {
+    if (node.name === 'Player') {
+      console.log(node);
+    }
+
     const htmlID = HtmlId('TYPE_TITLE::' + node.name);
     const kindLabel =
       node.kind !== 'OBJECT'
@@ -76,7 +80,9 @@ export function getDot(typeGraph, displayOptions): string {
       node.name
     }</FONT><BR/>${kindLabel}</TD>
         </TR>
-        ${objectValues(node.fields, nodeField)}
+        ${objectValues(node.fields, (field) =>
+          nodeField(showDescription, field),
+        )}
         ${possibleTypes(node)}
         ${derivedTypes(node)}
       </TABLE>>
@@ -90,10 +96,34 @@ export function getDot(typeGraph, displayOptions): string {
     return true;
   }
 
-  function nodeField(field) {
+  function nodeField(showDescription, field) {
     const relayIcon = field.relayType ? TEXT('{R}') : '';
     const deprecatedIcon = field.isDeprecated ? TEXT('{D}') : '';
     const parts = stringifyWrappers(field.typeWrappers).map(TEXT);
+
+    let descriptionText = '';
+
+    if (!!field.description && field.description.length && showDescription) {
+      let maxLen = 60;
+
+      let description = field.description
+        .split('<')
+        .join('')
+        .split('>')
+        .join('');
+
+      const size = Math.ceil(description.length / maxLen);
+
+      for (let i = 0; i < size; i++) {
+        const startIndex = i * maxLen;
+
+        descriptionText += `<TR><TD COLSPAN="2" ALIGN="center">___${description.substr(
+          startIndex,
+          maxLen,
+        )}</TD></TR>`;
+      }
+    }
+
     return canDisplayRow(field.type)
       ? `
       <TR>
@@ -105,6 +135,7 @@ export function getDot(typeGraph, displayOptions): string {
           field.type.name
         }${parts[1]}</TD>
             </TR>
+            ${descriptionText}
           </TABLE>
         </TD>
       </TR>
@@ -116,6 +147,30 @@ export function getDot(typeGraph, displayOptions): string {
 function possibleTypes(node) {
   const possibleTypes = node.possibleTypes;
   if (_.isEmpty(possibleTypes)) {
+    if (node.kind === 'ENUM' && !_.isEmpty(node.enumValues)) {
+      return `
+        <TR>
+          <TD>enum values</TD>
+        </TR>
+        ${array(
+          node.enumValues,
+          ({ name, description }) => `
+          <TR>
+            <TD ${HtmlId(name)} ALIGN="LEFT" PORT="${name}">
+              <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
+                <TR>
+                  <TD ALIGN="LEFT">${name}<FONT>  </FONT></TD>
+                  ${
+                    !!description ? `<TD ALIGN="RIGHT">${description}</TD>` : ''
+                  }
+                </TR>
+              </TABLE>
+            </TD>
+          </TR>
+        `,
+        )}
+      `;
+    }
     return '';
   }
   return `

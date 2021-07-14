@@ -32,6 +32,15 @@ export default class Settings extends React.Component<SettingsProps> {
           />
           <label htmlFor="sort">Sort by Alphabet</label>
           <Checkbox
+            id="verbose"
+            color="primary"
+            checked={!!options.verboseOutput}
+            onChange={(event) =>
+              onChange({ verboseOutput: event.target.checked })
+            }
+          />
+          <label htmlFor="verbose">Show Enums and Descriptions</label>
+          <Checkbox
             id="skip"
             color="primary"
             checked={!!options.skipRelay}

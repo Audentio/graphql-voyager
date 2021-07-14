@@ -123,6 +123,11 @@ function preprocessVizSVG(svgString: string) {
       }
 
       texts[i].classList.add('field-type');
+      if (str.indexOf('___') === 0) {
+        texts[i].innerHTML = texts[i].innerHTML.replace('___', '');
+        texts[i].classList.add('field-description');
+      }
+
       if (edgesSources[$field.id] && !/[\[\]\!]/.test(str))
         texts[i].classList.add('type-link');
     }

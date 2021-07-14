@@ -123,3 +123,8 @@ g.graph > polygon {
     opacity: 1;
   }
 }
+
+.field-description {
+  opacity: 0.6;
+  color: #333 !important;
+}
